@@ -106,14 +106,28 @@ where
 
 #[cfg(test)]
 mod test {
+    use std::time::Duration;
+
+    use async_std::task::sleep;
     use futures::executor::block_on;
 
     use crate::Spawner;
 
     #[test]
-    fn test() {
+    fn test_ready() {
         let spawner = Spawner::new();
         let handle = spawner.spawn(async { 1 });
+        let output = block_on(handle);
+        assert_eq!(output, 1)
+    }
+
+    #[test]
+    fn test_sleep() {
+        let spawner = Spawner::new();
+        let handle = spawner.spawn(async {
+            sleep(Duration::from_secs(1)).await;
+            1
+        });
         let output = block_on(handle);
         assert_eq!(output, 1)
     }
