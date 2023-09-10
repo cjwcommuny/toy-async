@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+User -> AsyncFile: new
+AsyncFile -> Reactor: register event source
+Executor -> AsyncFile: poll
+User -> AsyncFile: drop
+AsyncFile -> Reactor: unregister event source
+
+
+@enduml
