@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/object-diagram
+
+object Spawner {
+    sender
+}
+
+object Executor {
+    receiver
+}
+
+map ReadyQueue {
+    head => tail
+}
+
+object Task {
+    sender
+    --
+    selfStoreFuture
+}
+
+object SelfStoreFuture {
+    oneshotSender
+    --
+    future
+}
+
+object Handle {
+    oneshotReceiver
+}
+
+map Oneshot {
+    head => tail
+}
+
+Executor::receiver --> ReadyQueue::head
+Spawner::sender -> ReadyQueue::tail
+ReadyQueue --> Task
+Task::sender --> ReadyQueue::tail
+Task::selfStoreFuture --> SelfStoreFuture
+SelfStoreFuture::oneshotSender -> Oneshot::tail
+Handle::oneshotReceiver ---> Oneshot::head
+
+@enduml

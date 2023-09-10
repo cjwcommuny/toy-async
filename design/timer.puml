@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+Executor -> Timer: poll
+Timer -> Reactor: register waker
+Executor <-- Reactor: wake
+Executor -> Timer: poll
+Timer -> Reactor: remove waker
+
+@enduml
