@@ -1,10 +1,9 @@
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::{mpsc, Arc, Mutex};
-use std::task::{Context, Poll};
+use std::task::{Context, Poll, Wake, Waker};
 
 use futures::channel::oneshot;
-use futures::task::{waker_ref, ArcWake};
 use pin_project::pin_project;
 
 struct Executor {
@@ -14,7 +13,7 @@ struct Executor {
 impl Executor {
     fn run(self) {
         for task in self.ready_queue.into_iter() {
-            let waker = waker_ref(&task);
+            let waker = Waker::from(task.clone());
             let context = &mut Context::from_waker(&waker);
             let _ = task.future.lock().unwrap().as_mut().poll(context);
         }
@@ -58,9 +57,9 @@ struct Task {
     sender: mpsc::SyncSender<Arc<Task>>,
 }
 
-impl ArcWake for Task {
-    fn wake_by_ref(arc_self: &Arc<Self>) {
-        arc_self.sender.send(arc_self.clone()).expect("send failed");
+impl Wake for Task {
+    fn wake(self: Arc<Self>) {
+        self.sender.send(self.clone()).expect("send failed");
     }
 }
 
