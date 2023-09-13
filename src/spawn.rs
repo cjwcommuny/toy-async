@@ -25,9 +25,8 @@ pub struct Spawner {
 }
 
 impl Spawner {
-    pub fn new() -> Self {
-        const MAX_QUEUED_TASKS: usize = 10_000;
-        let (sender, ready_queue) = mpsc::sync_channel(MAX_QUEUED_TASKS);
+    pub fn new(max_queued_tasks: usize) -> Self {
+        let (sender, ready_queue) = mpsc::sync_channel(max_queued_tasks);
         let executor = Executor { ready_queue };
         std::thread::spawn(|| executor.run()); // TODO: add signal to kill the thread
 
@@ -112,7 +111,7 @@ mod test {
 
     #[test]
     fn test_ready() {
-        let spawner = Spawner::new();
+        let spawner = Spawner::new(10);
         let handle = spawner.spawn(async { 1 });
         let output = block_on(handle);
         assert_eq!(output, 1)
@@ -120,7 +119,7 @@ mod test {
 
     #[test]
     fn test_sleep() {
-        let spawner = Spawner::new();
+        let spawner = Spawner::new(10);
         let handle = spawner.spawn(async {
             sleep(Duration::from_secs(1)).await;
             1
