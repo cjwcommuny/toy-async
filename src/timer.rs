@@ -132,10 +132,6 @@ impl Handle {
     fn id(&self) -> Id<Timer> {
         self.id
     }
-
-    fn state(&self) -> Poll<()> {
-        Poll::Pending
-    }
 }
 
 struct ScheduledWaker {
