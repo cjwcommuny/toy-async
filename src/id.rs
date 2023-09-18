@@ -8,10 +8,7 @@ pub(crate) struct Id<T> {
 
 impl<T> Clone for Id<T> {
     fn clone(&self) -> Self {
-        Self {
-            id: self.id,
-            phantom: PhantomData,
-        }
+        *self
     }
 }
 
@@ -27,7 +24,7 @@ impl<T> PartialEq<Self> for Id<T> {
 
 impl<T> PartialOrd<Self> for Id<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.id.partial_cmp(&other.id)
+        Some(self.cmp(other))
     }
 }
 
